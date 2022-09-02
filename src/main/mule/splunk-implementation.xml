@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b3f488f8-34de-42ca-8922-9016586cfc40" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="8f5e9bee-aba2-4ab1-88a2-c3c71eaa0cf4" applicationName="splunk-implementation" applicationVersion="1.0.0" environment="dev" />
+	<flow name="splunk-implementationFlow" doc:id="159b536f-6f3a-40e7-9e35-dc9b6018b459" >
+		<http:listener doc:name="Listener" doc:id="122f588f-8f89-4ad4-9b23-26e083497694" config-ref="HTTP_Listener_config" path="/splunk" outputMimeType="application/json"/>
+		<logger level="INFO" doc:name="Logger" doc:id="df8170a1-425b-4c93-b82e-4d705a42bb39" message="---SPLUNK LOGGING TESTING---" category="Splunk.Logger"/>
+		<ee:transform doc:name="Transform Message" doc:id="b8b629ff-3f6d-4f98-8f00-075f05443bdd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "success": true,
+    "api_name": "splunk-implementation",
+    "version": "1.0.0",
+    "correlation_id": "123456",
+    "time_stamp": "2022-08-30T22:01:51Z"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Logger" doc:id="b2924d8c-07d0-4b6a-af1a-7b9cc07e4e6f" config-ref="JSON_Logger_Config" message="JSON Logger" category="Splunk.Logger"/>
+	</flow>
+</mule>
